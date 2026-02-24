@@ -1,3 +1,4 @@
+//const API = 'http://192.168.1.81:8000';
 const API = "http://127.0.0.1:8000";
 let allMaterials = [];
 let votedRequests = JSON.parse(localStorage.getItem("votedRequests") || "[]");
@@ -16,12 +17,21 @@ async function loadMarquee() {
     const res = await fetch(`${API}/announcements/`);
     const data = await res.json();
     if (data.length > 0) {
-      document.getElementById("marqueeText").textContent =
-        "📢 " + data[0].message;
+      const message = data[0].message;
+      // We use a Bullet or Icon as a separator and repeat the message
+      const separator = "&nbsp;&nbsp;&nbsp;&nbsp; • &nbsp;&nbsp;&nbsp;&nbsp;";
+      const repeatedContent = (message + separator).repeat(10); 
+      
+      const marqueeEl = document.getElementById("marqueeText");
+      marqueeEl.innerHTML = repeatedContent;
+      
+      // Re-run Lucide if you added icons inside the string
+      if (window.lucide) lucide.createIcons();
     }
-  } catch {}
+  } catch (err) {
+    console.error("Marquee load failed", err);
+  }
 }
-
 // MATERIALS
 async function loadMaterials() {
   try {

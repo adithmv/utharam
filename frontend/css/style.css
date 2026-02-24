@@ -104,8 +104,10 @@ nav {
 
 .marquee-inner {
   display: inline-block;
-  padding-left: 100%;
-  animation: marquee 35s linear infinite;
+  padding-left: 10%;
+  /* Start the first message halfway across */
+  animation: marquee 70s linear infinite;
+  /* Adjusted speed for better readability */
 }
 
 @keyframes marquee {
@@ -114,8 +116,10 @@ nav {
   }
 
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
+
+  /* Move only halfway since text is duplicated */
 }
 
 /* ─── HERO ─── */

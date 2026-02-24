@@ -1,4 +1,5 @@
 const API = "http://127.0.0.1:8000";
+//const API = 'http://192.168.1.81:8000';
 
 // ─── TOAST ───
 function showToast(msg, type = "") {
@@ -132,8 +133,23 @@ async function uploadMaterial() {
   const date = document.getElementById("matDate").value;
   const file = fileInput.files[0];
 
+  // 1. Basic field validation
   if (!title || !dept || !sem || !subject || !date || !file) {
     showToast("Please fill in all required fields.", "error");
+    return;
+  }
+
+  // 2. File Type Validation (Added PPT, DOC, etc.)
+  const allowedExtensions = /(\.pdf|\.docx|\.doc|\.ppt|\.pptx|\.zip)$/i;
+  if (!allowedExtensions.exec(file.name)) {
+    showToast("Invalid file type. Only PDF, DOCX, PPT, and ZIP are allowed.", "error");
+    return;
+  }
+
+  // 3. File Size Validation (Preventing huge uploads that hit Supabase limits)
+  const maxSize = 50 * 1024 * 1024; // 50MB limit for safety
+  if (file.size > maxSize) {
+    showToast("File is too large. Max limit is 50MB.", "error");
     return;
   }
 
@@ -172,18 +188,6 @@ async function uploadMaterial() {
     btn.disabled = false;
     btn.textContent = "Upload Material";
   }
-}
-
-function resetUploadForm() {
-  document.getElementById("matTitle").value = "";
-  document.getElementById("matDept").value = "";
-  document.getElementById("matSem").value = "";
-  document.getElementById("matSubject").value = "";
-  document.getElementById("matDescription").value = "";
-  document.getElementById("matDate").value = "";
-  fileInput.value = "";
-  fileNameEl.textContent = "";
-  charCount.textContent = "0/100";
 }
 
 // ─── LOAD MATERIALS ───

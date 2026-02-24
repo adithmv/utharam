@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Response, 
 from app.database import supabase
 from dotenv import load_dotenv
 import os
+import re 
 
 load_dotenv()
 
@@ -34,6 +35,9 @@ def logout(request: Request, response: Response):
     return {"message": "Logged out"}
 
 @router.post("/materials/upload")
+
+
+@router.post("/materials/upload")
 async def upload_material(
     request: Request,
     title: str = Form(...),
@@ -47,16 +51,31 @@ async def upload_material(
     if not is_authenticated(request):
         raise HTTPException(status_code=401, detail="Unauthorized")
     
-    allowed_types = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/zip"]
+    # 1. Expand allowed types to include PPT and DOC
+    allowed_types = [
+        "application/pdf", 
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", # .docx
+        "application/msword", # .doc
+        "application/vnd.ms-powerpoint", # .ppt
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation", # .pptx
+        "application/zip"
+    ]
+    
     if file.content_type not in allowed_types:
-        raise HTTPException(status_code=400, detail="Only PDF, DOCX, ZIP allowed")
+        raise HTTPException(status_code=400, detail="Unsupported file format")
+
+    # 2. Clean the filename to prevent 'InvalidKey' errors 
+    # This replaces everything except letters, numbers, dots, and dashes with underscores
+    clean_name = re.sub(r'[^a-zA-Z0-9.-]', '_', file.filename)
+    file_path = f"{dept}/{sem}/{subject}/{clean_name}"
 
     file_bytes = await file.read()
-    file_path = f"{dept}/{sem}/{subject}/{file.filename}"
     
+    # 3. Upload to Supabase 
     supabase.storage.from_("materials").upload(file_path, file_bytes, {"content-type": file.content_type})
     file_url = supabase.storage.from_("materials").get_public_url(file_path)
 
+    # 4. Save to Database 
     supabase.table("materials").insert({
         "title": title,
         "dept": dept,
