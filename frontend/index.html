@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Utharam — VJEC Study Hub</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="brand">ഉത്തരം <span>Utharam</span></div>
+        <div class="nav-search">
+            <svg width="14" height="14" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search materials..." />
+        </div>
+    </nav>
+
+    <!-- MARQUEE -->
+    <div class="marquee-bar">
+        <span class="marquee-inner" id="marqueeText">📢 Welcome to Utharam — VJEC's centralized study hub.</span>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero">
+        <h1>Find Your Study Materials</h1>
+        <p>Notes, question banks & lab manuals — all in one place.</p>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+        <label>Filter:</label>
+        <select id="deptFilter">
+            <option value="">All Departments</option>
+            <option>CSE</option>
+            <option>Cyber Security</option>
+            <option>ADS</option>
+            <option>Mechanical</option>
+            <option>Electronics & Communication</option>
+            <option>Electrical & Electronics</option>
+            <option>Civil Engineering</option>
+        </select>
+        <select id="semFilter">
+            <option value="">All Semesters</option>
+            <option>S1</option>
+            <option>S2</option>
+            <option>S3</option>
+            <option>S4</option>
+            <option>S5</option>
+            <option>S6</option>
+            <option>S7</option>
+            <option>S8</option>
+        </select>
+        <button class="btn-clear" onclick="clearFilters()">Clear filters</button>
+    </div>
+
+    <!-- MAIN -->
+    <main>
+        <div class="section-title">📚 Materials</div>
+        <div id="materialsContainer" class="material-grid">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <div class="section-title">💬 Request Board</div>
+        <div class="request-section">
+            <div class="request-input-row">
+                <input class="request-input" id="requestInput" type="text"
+                    placeholder="What material is missing? e.g. S4 CSE OS Module 3 notes" maxlength="200" />
+                <button class="btn-submit" onclick="submitRequest()">+ Request</button>
+            </div>
+            <div id="requestList" class="request-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>Utharam · VJEC Study Hub · Built by CS Dept</p>
+        <a class="admin-link" href="admin.html">⚙</a>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
