@@ -1,4 +1,4 @@
-const API = 'https://utharam-api.onrender.com';
+const API = 'https://utharam.onrender.com';
 
 // ─── TOAST ───
 function showToast(msg, type = "") {

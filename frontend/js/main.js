@@ -1,4 +1,4 @@
-const API = 'https://utharam-api.onrender.com';
+const API = 'https://utharam.onrender.com';
 let allMaterials = [];
 let votedRequests = JSON.parse(localStorage.getItem("votedRequests") || "[]");
 
