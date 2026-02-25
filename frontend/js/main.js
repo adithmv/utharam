@@ -1,5 +1,5 @@
-//const API = 'http://192.168.1.81:8000';
-const API = "http://127.0.0.1:8000";
+const API = 'http://192.168.1.81:8000';
+// const API = "http://127.0.0.1:8000";
 let allMaterials = [];
 let votedRequests = JSON.parse(localStorage.getItem("votedRequests") || "[]");
 
