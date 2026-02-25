@@ -22,7 +22,13 @@ def login(response: Response, username: str = Form(...), password: str = Form(..
         import secrets
         token = secrets.token_hex(32)
         sessions[token] = "admin"
-        response.set_cookie(key="session", value=token, httponly=True)
+        response.set_cookie(
+    key="session",
+    value=token,
+    httponly=True,
+    samesite="none",
+    secure=True
+)
         return {"message": "Login successful"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
