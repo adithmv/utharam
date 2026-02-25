@@ -6,10 +6,7 @@ app = FastAPI(title="Utharam API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://utharam.vercel.app", # Your live Vercel link
-        "http://localhost:5500"        # Your local testing link
-    ],
+    allow_origins=["https://utharam.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
