@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Response, 
 from app.database import supabase
 from dotenv import load_dotenv
 import os
-import re 
+import re
 
 load_dotenv()
 
@@ -23,12 +23,12 @@ def login(response: Response, username: str = Form(...), password: str = Form(..
         token = secrets.token_hex(32)
         sessions[token] = "admin"
         response.set_cookie(
-    key="session",
-    value=token,
-    httponly=True,
-    samesite="none",
-    secure=True
-)
+            key="session",
+            value=token,
+            httponly=True,
+            samesite="none",
+            secure=True
+        )
         return {"message": "Login successful"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -37,11 +37,12 @@ def logout(request: Request, response: Response):
     token = request.cookies.get("session")
     if token in sessions:
         del sessions[token]
-    response.delete_cookie("session")
+    response.delete_cookie(
+        key="session",
+        samesite="none",
+        secure=True
+    )
     return {"message": "Logged out"}
-
-@router.post("/materials/upload")
-
 
 @router.post("/materials/upload")
 async def upload_material(
@@ -56,32 +57,29 @@ async def upload_material(
 ):
     if not is_authenticated(request):
         raise HTTPException(status_code=401, detail="Unauthorized")
-    
-    # 1. Expand allowed types to include PPT and DOC
+
     allowed_types = [
-        "application/pdf", 
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", # .docx
-        "application/msword", # .doc
-        "application/vnd.ms-powerpoint", # .ppt
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation", # .pptx
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/msword",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "application/zip"
     ]
-    
+
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Unsupported file format")
 
-    # 2. Clean the filename to prevent 'InvalidKey' errors 
-    # This replaces everything except letters, numbers, dots, and dashes with underscores
     clean_name = re.sub(r'[^a-zA-Z0-9.-]', '_', file.filename)
     file_path = f"{dept}/{sem}/{subject}/{clean_name}"
 
     file_bytes = await file.read()
-    
-    # 3. Upload to Supabase 
-    supabase.storage.from_("materials").upload(file_path, file_bytes, {"content-type": file.content_type})
+
+    supabase.storage.from_("materials").upload(
+        file_path, file_bytes, {"content-type": file.content_type}
+    )
     file_url = supabase.storage.from_("materials").get_public_url(file_path)
 
-    # 4. Save to Database 
     supabase.table("materials").insert({
         "title": title,
         "dept": dept,
