@@ -122,6 +122,14 @@ descInput.addEventListener("input", () => {
   charCount.classList.toggle("warn", len >= 90);
 });
 
+
+// ─── PREMIUM TOGGLE ───
+function togglePriceField() {
+  const isPremium = document.getElementById("matIsPremium").checked;
+  document.getElementById("priceField").style.display = isPremium ? "block" : "none";
+  document.getElementById("toggleLabel").textContent = isPremium ? "Premium" : "Free";
+}
+
 // ─── UPLOAD MATERIAL ───
 async function uploadMaterial() {
   const title = document.getElementById("matTitle").value.trim();
@@ -131,6 +139,8 @@ async function uploadMaterial() {
   const description = document.getElementById("matDescription").value.trim();
   const date = document.getElementById("matDate").value;
   const file = fileInput.files[0];
+  const isPremium = document.getElementById("matIsPremium").checked;
+  const price = document.getElementById("matPrice").value;
 
   // 1. Basic field validation
   if (!title || !dept || !sem || !subject || !date || !file) {
@@ -152,6 +162,12 @@ async function uploadMaterial() {
     return;
   }
 
+  // 4. Premium price validation
+  if (isPremium && (!price || parseFloat(price) <= 0)) {
+    showToast("Please enter a valid price for the premium material.", "error");
+    return;
+  }
+
   const formData = new FormData();
   formData.append("title", title);
   formData.append("dept", dept);
@@ -160,6 +176,8 @@ async function uploadMaterial() {
   formData.append("description", description);
   formData.append("date", date);
   formData.append("file", file);
+  formData.append("is_premium", isPremium ? "true" : "false");
+  formData.append("price", isPremium ? price : "0");
 
   const btn = document.getElementById("uploadBtn");
   btn.disabled = true;

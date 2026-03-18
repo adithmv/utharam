@@ -93,6 +93,46 @@
 
     <div class="toast" id="toast"></div>
 
+
+    <!-- PAYMENT MODAL -->
+    <div class="pay-modal-overlay" id="paymentModal">
+      <div class="pay-modal">
+        <div class="pay-modal-header">
+          <div>
+            <div class="pay-modal-label">Purchase Material</div>
+            <div class="pay-modal-title" id="payModalTitle"></div>
+          </div>
+          <button class="pay-modal-close" onclick="closePaymentModal()">&#x2715;</button>
+        </div>
+        <div class="pay-amount-box">
+          <span>Total Amount</span>
+          <strong id="payModalPrice"></strong>
+        </div>
+        <div class="pay-form">
+          <div class="pay-field">
+            <label>Cardholder Name</label>
+            <input type="text" id="payName" placeholder="Name on card" />
+          </div>
+          <div class="pay-field">
+            <label>Card Number</label>
+            <input type="text" id="payCardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
+          </div>
+          <div class="pay-field-row">
+            <div class="pay-field">
+              <label>Expiry</label>
+              <input type="text" id="payExpiry" placeholder="MM/YY" maxlength="5" />
+            </div>
+            <div class="pay-field">
+              <label>CVV</label>
+              <input type="text" id="payCvv" placeholder="123" maxlength="3" />
+            </div>
+          </div>
+          <div class="pay-error" id="payError"></div>
+          <button class="pay-btn" id="payBtn" onclick="processPayment()">Pay &amp; Download</button>
+          <div class="pay-note">&#x1F512; Simulated payment &#x2014; no real charges</div>
+        </div>
+      </div>
+    </div>
     <script src="js/main.js"></script>
 </body>
 

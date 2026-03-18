@@ -68,7 +68,9 @@ async def upload_material(
     subject: str = Form(...),
     description: str = Form(...),
     date: str = Form(...),
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    is_premium: str = Form(default="false"),
+    price: float = Form(default=0.0)
 ):
     if not is_authenticated(request):
         raise HTTPException(status_code=401, detail="Unauthorized")
@@ -95,6 +97,8 @@ async def upload_material(
     )
     file_url = supabase.storage.from_("materials").get_public_url(file_path)
 
+    premium = is_premium.lower() == "true"
+
     supabase.table("materials").insert({
         "title": title,
         "dept": dept,
@@ -102,7 +106,9 @@ async def upload_material(
         "subject": subject,
         "description": description,
         "date": date,
-        "file_url": file_url
+        "file_url": file_url,
+        "is_premium": premium,
+        "price": price if premium else 0.0
     }).execute()
 
     return {"message": "Material uploaded successfully"}
