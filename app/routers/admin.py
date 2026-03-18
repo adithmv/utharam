@@ -3,6 +3,8 @@ from app.database import supabase
 from dotenv import load_dotenv
 import os
 import re
+import jwt
+from datetime import datetime, timezone, timedelta
 
 load_dotenv()
 
@@ -10,33 +12,46 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
-sessions = {}
+JWT_SECRET = os.getenv("JWT_SECRET", "changeme-use-a-strong-secret-in-env")
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRE_HOURS = 12
 
-def is_authenticated(request: Request):
+def create_jwt_token() -> str:
+    payload = {
+        "sub": "admin",
+        "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRE_HOURS)
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+def is_authenticated(request: Request) -> bool:
     token = request.cookies.get("session")
-    return token and sessions.get(token) == "admin"
+    if not token:
+        return False
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload.get("sub") == "admin"
+    except jwt.ExpiredSignatureError:
+        return False
+    except jwt.InvalidTokenError:
+        return False
 
 @router.post("/login")
 def login(response: Response, username: str = Form(...), password: str = Form(...)):
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-        import secrets
-        token = secrets.token_hex(32)
-        sessions[token] = "admin"
+        token = create_jwt_token()
         response.set_cookie(
             key="session",
             value=token,
             httponly=True,
             samesite="none",
-            secure=True
+            secure=True,
+            max_age=JWT_EXPIRE_HOURS * 3600
         )
         return {"message": "Login successful"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
 @router.post("/logout")
-def logout(request: Request, response: Response):
-    token = request.cookies.get("session")
-    if token in sessions:
-        del sessions[token]
+def logout(response: Response):
     response.delete_cookie(
         key="session",
         samesite="none",
